@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -38,6 +40,18 @@ class User
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $birthDate = null;
+
+    #[ORM\OneToOne(inversedBy: 'users', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Adress $adress = null;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: PurchaseNft::class, orphanRemoval: true)]
+    private Collection $purchaseNft;
+
+    public function __construct()
+    {
+        $this->purchaseNft = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -136,6 +150,48 @@ class User
     public function setBirthDate(?\DateTimeInterface $birthDate): static
     {
         $this->birthDate = $birthDate;
+
+        return $this;
+    }
+
+    public function getAdress(): ?Adress
+    {
+        return $this->adress;
+    }
+
+    public function setAdress(Adress $adress): static
+    {
+        $this->adress = $adress;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PurchaseNft>
+     */
+    public function getPurchaseNft(): Collection
+    {
+        return $this->purchaseNft;
+    }
+
+    public function addPurchaseNft(PurchaseNft $purchaseNft): static
+    {
+        if (!$this->purchaseNft->contains($purchaseNft)) {
+            $this->purchaseNft->add($purchaseNft);
+            $purchaseNft->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePurchaseNft(PurchaseNft $purchaseNft): static
+    {
+        if ($this->purchaseNft->removeElement($purchaseNft)) {
+            // set the owning side to null (unless already changed)
+            if ($purchaseNft->getUser() === $this) {
+                $purchaseNft->setUser(null);
+            }
+        }
 
         return $this;
     }

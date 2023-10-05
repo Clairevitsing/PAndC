@@ -20,6 +20,10 @@ class NftCollection
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
+    #[ORM\ManyToOne(inversedBy: 'nftCollection')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Nft $nft = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -45,6 +49,18 @@ class NftCollection
     public function setDescription(string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getNft(): ?Nft
+    {
+        return $this->nft;
+    }
+
+    public function setNft(?Nft $nft): static
+    {
+        $this->nft = $nft;
 
         return $this;
     }

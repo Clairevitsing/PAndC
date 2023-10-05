@@ -30,6 +30,10 @@ class PurchaseNft
     #[ORM\Column]
     private ?int $userId = null;
 
+    #[ORM\ManyToOne(inversedBy: 'purchaseNft')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -91,6 +95,18 @@ class PurchaseNft
     public function setUserId(int $userId): static
     {
         $this->userId = $userId;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

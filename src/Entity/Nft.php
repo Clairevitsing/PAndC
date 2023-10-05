@@ -41,12 +41,13 @@ class Nft
     #[ORM\OneToMany(mappedBy: 'nft', targetEntity: PurchaseNft::class, orphanRemoval: true)]
     private Collection $purchaseNfts;
 
-    #[ORM\OneToOne(mappedBy: 'nft', cascade: ['persist', 'remove'])]
-    private ?NftPrice $nftPrice = null;
+    #[ORM\OneToMany(mappedBy: 'nft', targetEntity: NftCollection::class, orphanRemoval: true)]
+    private Collection $nftCollection;
 
     public function __construct()
     {
         $this->purchaseNfts = new ArrayCollection();
+        $this->nftCollection = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -168,19 +169,32 @@ class Nft
         return $this;
     }
 
-    public function getNftPrice(): ?NftPrice
+    /**
+     * @return Collection<int, NftCollection>
+     */
+    public function getNftCollection(): Collection
     {
-        return $this->nftPrice;
+        return $this->nftCollection;
     }
 
-    public function setNftPrice(NftPrice $nftPrice): static
+    public function addNftCollection(NftCollection $nftCollection): static
     {
-        // set the owning side of the relation if necessary
-        if ($nftPrice->getNft() !== $this) {
-            $nftPrice->setNft($this);
+        if (!$this->nftCollection->contains($nftCollection)) {
+            $this->nftCollection->add($nftCollection);
+            $nftCollection->setNft($this);
         }
 
-        $this->nftPrice = $nftPrice;
+        return $this;
+    }
+
+    public function removeNftCollection(NftCollection $nftCollection): static
+    {
+        if ($this->nftCollection->removeElement($nftCollection)) {
+            // set the owning side to null (unless already changed)
+            if ($nftCollection->getNft() === $this) {
+                $nftCollection->setNft(null);
+            }
+        }
 
         return $this;
     }
