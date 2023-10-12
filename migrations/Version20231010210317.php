@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20231005144345 extends AbstractMigration
+final class Version20231010210317 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,14 +20,16 @@ final class Version20231005144345 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE purchase_nft ADD CONSTRAINT FK_FBAA39A76ED395 FOREIGN KEY (user_id) REFERENCES `user` (id)');
-        $this->addSql('CREATE INDEX IDX_FBAA39A76ED395 ON purchase_nft (user_id)');
+        $this->addSql('ALTER TABLE user ADD address_id INT NOT NULL');
+        $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D649F5B7AF75 FOREIGN KEY (address_id) REFERENCES address (id)');
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_8D93D649F5B7AF75 ON user (address_id)');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE purchase_nft DROP FOREIGN KEY FK_FBAA39A76ED395');
-        $this->addSql('DROP INDEX IDX_FBAA39A76ED395 ON purchase_nft');
+        $this->addSql('ALTER TABLE `user` DROP FOREIGN KEY FK_8D93D649F5B7AF75');
+        $this->addSql('DROP INDEX UNIQ_8D93D649F5B7AF75 ON `user`');
+        $this->addSql('ALTER TABLE `user` DROP address_id');
     }
 }

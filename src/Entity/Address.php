@@ -2,11 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\AdressRepository;
+use ApiPlatform\Metadata\ApiResource;
+use App\Repository\AddressRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: AdressRepository::class)]
-class Adress
+#[ORM\Entity(repositoryClass: AddressRepository::class)]
+#[ApiResource]
+class Address
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -22,8 +24,8 @@ class Adress
     #[ORM\Column(length: 255)]
     private ?string $city = null;
 
-    #[ORM\OneToOne(mappedBy: 'adress', cascade: ['persist', 'remove'])]
-    private ?User $users = null;
+    #[ORM\OneToOne(mappedBy: 'address', cascade: ['persist', 'remove'])]
+    private ?User $user = null;
 
     public function getId(): ?int
     {
@@ -66,19 +68,19 @@ class Adress
         return $this;
     }
 
-    public function getUsers(): ?User
+    public function getUser(): ?User
     {
-        return $this->users;
+        return $this->user;
     }
 
-    public function setUsers(User $users): static
+    public function setUser(User $user): static
     {
         // set the owning side of the relation if necessary
-        if ($users->getAdress() !== $this) {
-            $users->setAdress($this);
+        if ($user->getAddress() !== $this) {
+            $user->setAddress($this);
         }
 
-        $this->users = $users;
+        $this->user = $user;
 
         return $this;
     }

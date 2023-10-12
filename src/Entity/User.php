@@ -41,12 +41,15 @@ class User
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $birthDate = null;
 
-    #[ORM\OneToOne(inversedBy: 'users', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Adress $adress = null;
-
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: PurchaseNft::class, orphanRemoval: true)]
     private Collection $purchaseNft;
+
+    #[ORM\Column(length: 255)]
+    private ?string $profilPicture = null;
+
+    #[ORM\OneToOne(inversedBy: 'user', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Address $address = null;
 
     public function __construct()
     {
@@ -96,12 +99,12 @@ class User
 
     public function getPassword(): ?string
     {
-        return $this->Password;
+        return $this->password;
     }
 
-    public function setPassword(?string $Password): static
+    public function setPassword(?string $password): static
     {
-        $this->Password = $Password;
+        $this->password = $password;
 
         return $this;
     }
@@ -111,9 +114,9 @@ class User
         return $this->pseudo;
     }
 
-    public function setPseudo(string $Pseudo): static
+    public function setPseudo(string $pseudo): static
     {
-        $this->Pseudo = $pseudo;
+        $this->pseudo = $pseudo;
 
         return $this;
     }
@@ -123,9 +126,9 @@ class User
         return $this->lastname;
     }
 
-    public function setLastname(?string $Lastname): static
+    public function setLastname(?string $lastname): static
     {
-        $this->Lastname = $lastname;
+        $this->lastname = $lastname;
 
         return $this;
     }
@@ -135,9 +138,9 @@ class User
         return $this->firstname;
     }
 
-    public function setFirstname(?string $Firstname): static
+    public function setFirstname(?string $firstname): static
     {
-        $this->Firstname = $firstname;
+        $this->firstname = $firstname;
 
         return $this;
     }
@@ -153,19 +156,6 @@ class User
 
         return $this;
     }
-
-    public function getAdress(): ?Adress
-    {
-        return $this->adress;
-    }
-
-    public function setAdress(Adress $adress): static
-    {
-        $this->adress = $adress;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, PurchaseNft>
      */
@@ -192,6 +182,30 @@ class User
                 $purchaseNft->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getProfilPicture(): ?string
+    {
+        return $this->profilPicture;
+    }
+
+    public function setProfilPicture(string $profilPicture): static
+    {
+        $this->profilPicture = $profilPicture;
+
+        return $this;
+    }
+
+    public function getAddress(): ?Address
+    {
+        return $this->address;
+    }
+
+    public function setAddress(Address $address): static
+    {
+        $this->address = $address;
 
         return $this;
     }
