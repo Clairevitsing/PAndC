@@ -6,8 +6,13 @@ use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
+#[ApiResource(
+    normalizationContext: ['groups' => 'category:read'],
+    denormalizationContext: ['groups' => 'nft:write', 'nft:update']
+)]
 class Category
 {
     #[ORM\Id]
@@ -27,6 +32,10 @@ class Category
     public function __construct()
     {
         $this->nfts = new ArrayCollection();
+    }
+
+    public function __toString() {
+        return $this->name;
     }
 
     public function getId(): ?int

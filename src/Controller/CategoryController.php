@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Category;
+use App\Form\CategoryType;
 use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +16,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CategoryController extends AbstractController
 {
-    #[Route('/category', name: 'app_category', methods: ['GET' ])]
+    #[Route('/categories', name: 'app_category_index', methods: ['GET' ])]
     public function indexCategory(CategoryRepository $categoryRepository): Response
     {
         return $this->render('category/index.html.twig',[
@@ -37,7 +38,7 @@ class CategoryController extends AbstractController
         }
         
         return $this->renderForm('category/new.html.twig',[
-            'categories' => $category,
+            'category' => $category,
             'form' => $form,
         ]);
     }
@@ -51,13 +52,13 @@ class CategoryController extends AbstractController
             throw new NotFoundHttpException('No category found for id');
         }
 
-        if ($request->getMethod() === 'POST') {
-            $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Unable to access this page!');
-        }
+        // if ($request->getMethod() === 'POST') {
+        //     $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Unable to access this page!');
+        // }
        
 
        $form = $this->createForm(CategoryType::class, $category);
-       $form->handleRequest($this->$request);
+       $form->handleRequest($request);
 
        if($form->isSubmitted() && $form->isValid()){
             $category = $categoryRepository->save($category, true);
@@ -67,18 +68,35 @@ class CategoryController extends AbstractController
        }
        
        return $this->renderForm('category/edit.html.twig',[
-           'categories' => $category,
+           'category' => $category,
            'form' => $form,
        ]);
 
     }
 
-    #[Route('/category/delete/{id}', name: 'category_delete', methods: ['GET','POST'])]
-    public function deleteAction(Request $request, Category $category, EntityManagerInterface $entityManager): Response
+    #[Route('/category/show/{id}', name: 'app_category_show', methods: ['GET' ])]
+    public function showCategory(CategoryRepository $categoryRepository, int $id): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Unable to access this page!');
-        $entityManager->remove($category);
-        $entityManager->flush();
+        $category = $categoryRepository->find($id);
 
+        if (! $category) {
+            throw new NotFoundHttpException('No category found for id');
+        }
+
+        return $this->render('category/show.html.twig',[
+            'category' => $category,
+        ]);
+    }
+
+
+    #[Route('/category/delete/{id}', name: 'app_category_delete', methods: ['GET','POST'])]
+    public function deleteCategory(Request $request, Category $category, CategoryRepository $categoryRepository): Response
+    {
+        //$this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Unable to access this page!');
+        if ($this->isCsrfTokenValid('delete'.$category->getId(), $request->request->get('_token'))) {
+            $categoryRepository->remove($category, true);
+        }
+
+        return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);
     }
 }
