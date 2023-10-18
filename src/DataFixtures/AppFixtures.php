@@ -4,11 +4,12 @@ namespace App\DataFixtures;
 
 use Faker\Factory;
 use App\Entity\Nft;
+use App\Entity\User;
 use App\Entity\Address;
 use App\Entity\Category;
-use App\Entity\User;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
@@ -18,7 +19,10 @@ class AppFixtures extends Fixture
     const NBUSERS = 10;
     
 
-
+    public function __construct(private UserPasswordHasherInterface $hasher)
+    {
+    }
+    
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
