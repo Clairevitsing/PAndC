@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PurchaseNft{% endblock %}
+
+{% block body %}
+    <h1>PurchaseNft</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ purchase_nft.id }}</td>
+            </tr>
+            <tr>
+                <th>PurchaseDate</th>
+                <td>{{ purchase_nft.purchaseDate ? purchase_nft.purchaseDate|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>NftPriceEth</th>
+                <td>{{ purchase_nft.nftPriceEth }}</td>
+            </tr>
+            <tr>
+                <th>NftPriceEur</th>
+                <td>{{ purchase_nft.nftPriceEur }}</td>
+            </tr>
+            <tr>
+                <th>UserId</th>
+                <td>{{ purchase_nft.userId }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_purchase_nft_crud_index') }}">back to list</a>
+
+    <a href="{{ path('app_purchase_nft_crud_edit', {'id': purchase_nft.id}) }}">edit</a>
+
+    {{ include('purchase_nft_crud/_delete_form.html.twig') }}
+{% endblock %}

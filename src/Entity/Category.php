@@ -2,31 +2,40 @@
 
 namespace App\Entity;
 
-use App\Repository\CategoryRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use App\Repository\CategoryRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ApiResource(
-    normalizationContext: ['groups' => 'category:read'],
+    normalizationContext: ['groups' => ['category:read','nft:read']],
     denormalizationContext: ['groups' => 'nft:write', 'nft:update']
 )]
+#[ApiFilter(SearchFilter::class, properties: ['name' => 'ipartial'])]
 class Category
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['nft:read', 'category:read', 'nft:update'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['nft:read', 'category:read', 'nft:update'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['nft:read', 'category:read', 'nft:update'])]
     private ?string $description = null;
 
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Nft::class)]
+    #[Groups(['nft:read', 'category:read', 'nft:update'])]
+
     private Collection $nfts;
 
     public function __construct()

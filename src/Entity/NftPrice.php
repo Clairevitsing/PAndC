@@ -2,25 +2,35 @@
 
 namespace App\Entity;
 
-use App\Repository\NftPriceRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use App\Repository\NftPriceRepository;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: NftPriceRepository::class)]
-#[ApiResource()]
+#[ApiResource(
+    normalizationContext: ['groups' => 'nft:read'],
+    denormalizationContext: ['groups' => 'nft:write', 'nft:update']
+)]
+#[ApiFilter(SearchFilter::class, properties: ['price_date' => 'ipartial'])]
 
 class NftPrice
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['nft:read', 'category:read', 'user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['nft:read', 'category:read', 'user:read'])]
     private ?\DateTimeInterface $priceDate = null;
 
     #[ORM\Column]
+    #[Groups(['nft:read', 'category:read', 'user:read'])]
     private ?float $ethValue = null;
 
     #[ORM\OneToOne(inversedBy: 'nftPrice', cascade: ['persist', 'remove'])]
@@ -29,7 +39,7 @@ class NftPrice
 
     public function getId(): ?int
     {
-        return $this->id;
+        return $this->id; 
     }
 
     public function getPriceDate(): ?\DateTimeInterface

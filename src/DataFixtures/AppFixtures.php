@@ -19,7 +19,7 @@ class AppFixtures extends Fixture
     const NBUSERS = 10;
     
 
-    public function __construct(private UserPasswordHasherInterface $hasher)
+    public function __construct(private UserPasswordHasherInterface $passwordHasher)
     {
     }
     
@@ -72,7 +72,7 @@ class AppFixtures extends Fixture
             $adminUser
                 ->setPseudo('admin')
                 ->setRoles(["ROLE_ADMIN"])
-                ->setPassword('password')
+                ->setPassword('admin')
                 ->setEmail($faker->unique()->freeEmail())
                 ->setGender($faker->boolean(50))
                 ->setFirstname($faker->firstName())

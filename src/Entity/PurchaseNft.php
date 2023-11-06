@@ -2,31 +2,41 @@
 
 namespace App\Entity;
 
-use App\Repository\PurchaseNftRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use App\Repository\PurchaseNftRepository;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 
 #[ORM\Entity(repositoryClass: PurchaseNftRepository::class)]
 #[ApiResource()]
+#[ApiFilter(SearchFilter::class, properties: ['name' => 'ipartial'])]
 class PurchaseNft
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['purchaseNft:read', 'user:read'])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'purchaseNfts')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['purchaseNft:read', 'user:read'])]
     private ?Nft $nft = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['purchaseNft:read', 'user:read', 'nft:read'])]
     private ?\DateTimeInterface $purchaseDate = null;
 
     #[ORM\Column]
+    #[Groups(['purchaseNft:read', 'user:read', 'nft:read'])]
     private ?float $nftPriceEth = null;
 
     #[ORM\Column]
+    #[Groups(['purchaseNft:read', 'user:read', 'nft:read'])]
     private ?float $nftPriceEur = null;
 
     #[ORM\Column]
@@ -34,6 +44,7 @@ class PurchaseNft
 
     #[ORM\ManyToOne(inversedBy: 'purchaseNft')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['purchaseNft:read', 'user:read'])]
     private ?User $user = null;
 
     public function getId(): ?int

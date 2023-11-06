@@ -2,12 +2,19 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\AddressRepository;
-use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AddressRepository::class)]
-#[ApiResource()]
+#[ApiResource(
+    normalizationContext: ['groups' => ['address:read','user:read']],
+    denormalizationContext: ['groups' => 'user:write']
+)]
+#[ApiFilter(SearchFilter::class, properties: ['name' => 'ipartial'])]
 class Address
 {
     #[ORM\Id]
@@ -16,15 +23,19 @@ class Address
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:read','user:create'])]
     private ?string $street = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:read','user:create'])]
     private ?string $ZIPCode = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:read','user:create'])]
     private ?string $city = null;
 
     #[ORM\OneToOne(mappedBy: 'address', cascade: ['persist', 'remove'])]
+    #[Groups(['user:read','user:create'])]
     private ?User $user = null;
 
     public function getId(): ?int

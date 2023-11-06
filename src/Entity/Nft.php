@@ -2,45 +2,61 @@
 
 namespace App\Entity;
 
-use App\Repository\NftRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\NftRepository;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: NftRepository::class)]
-#[ApiResource()]
+#[ApiResource(
+    normalizationContext: ['groups' => ['nft:read','user:read']], order: ['launch_date' => 'DESC'],
+    denormalizationContext: ['groups' => 'nft:write', 'nft:update']
+)]
+#[ApiFilter(SearchFilter::class, properties: ['name' => 'ipartial'])]
 class Nft
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['category:read', 'nft:read', 'user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['category:read', 'nft:read', 'user:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['category:read', 'nft:read', 'user:read','nft:write', 'nft:update'])]
     private ?string $img = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['category:read', 'nft:read', 'user:read', 'nft:write','nft:update'])]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(['category:read', 'nft:read', 'user:read', 'nft:write'])]
     private ?\DateTimeInterface $launchDate = null;
 
     #[ORM\Column]
+    #[Groups(['category:read', 'nft:read', 'user:read', 'nft:write'])]
     private ?float $launchPriceEur = null;
 
     #[ORM\Column]
+    #[Groups(['category:read', 'nft:read', 'user:read', 'nft:write'])]
     private ?float $launchPriceEth = null;
 
     #[ORM\ManyToOne(inversedBy: 'nfts')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(name:"nft:read", nullable: false, referencedColumnName: "id")]
+    #[Groups('nft:read','user:read')]
     private ?Category $category = null;
 
     #[ORM\OneToMany(mappedBy: 'nft', targetEntity: PurchaseNft::class, orphanRemoval: true)]
+    #[Groups('nft:read')]
     private Collection $purchaseNfts;
 
     public function __construct()

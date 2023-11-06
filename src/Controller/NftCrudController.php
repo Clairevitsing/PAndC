@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-#[Route('/nft/crud')]
+#[Route('/admin/nft/crud')]
 class NftCrudController extends AbstractController
 {
     #[Route('/', name: 'app_nft_crud_index', methods: ['GET'])]
