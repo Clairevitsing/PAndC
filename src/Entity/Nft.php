@@ -51,7 +51,7 @@ class Nft
     private ?float $launchPriceEth = null;
 
     #[ORM\ManyToOne(inversedBy: 'nfts')]
-    #[ORM\JoinColumn(name:"nft:read", nullable: false, referencedColumnName: "id")]
+    #[ORM\JoinColumn(name:"category_id", nullable: false, referencedColumnName: "id")]
     #[Groups('nft:read','user:read')]
     private ?Category $category = null;
 
