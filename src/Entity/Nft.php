@@ -12,9 +12,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
 
+
 #[ORM\Entity(repositoryClass: NftRepository::class)]
 #[ApiResource(
-    normalizationContext: ['groups' => ['nft:read','user:read']], order: ['launch_date' => 'DESC'],
+    normalizationContext: ['groups' => ['nft:read','user:read']], order: ['launchDate' => 'DESC'],
     denormalizationContext: ['groups' => 'nft:write', 'nft:update']
 )]
 #[ApiFilter(SearchFilter::class, properties: ['name' => 'ipartial'])]

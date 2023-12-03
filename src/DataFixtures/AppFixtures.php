@@ -53,14 +53,14 @@ class AppFixtures extends Fixture
             $user = new User();
             $user
                 ->setPseudo($faker->userName())
-                ->setPassword('password')
+                ->setPassword($this->passwordHasher->hashPassword($user, "password"))
                 ->setEmail($uniqueEmail)
                 ->setGender($faker->boolean(50))
                 ->setFirstname($faker->firstName())
                 ->setLastname($faker->lastName())
                 ->setBirthDate($faker->dateTimeBetween('-75 years', '-18 years'))
                 ->setAddress($addresses[$i])
-                ->setProfilPicture('../assets/profile-picture.webp');
+                ->setProfilPicture($faker->imageUrl(200, 200));
             
                 $manager->persist($user); 
                 $users[] = $user;
@@ -72,7 +72,7 @@ class AppFixtures extends Fixture
             $adminUser
                 ->setPseudo('admin')
                 ->setRoles(["ROLE_ADMIN"])
-                ->setPassword('admin')
+                ->setPassword($this->passwordHasher->hashPassword($user, 'admin'))
                 ->setEmail($faker->unique()->freeEmail())
                 ->setGender($faker->boolean(50))
                 ->setFirstname($faker->firstName())

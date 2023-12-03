@@ -21,16 +21,16 @@ class UserPasswordSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::VIEW => ['cryptPassword',EventPriorities::PRE_WRITE],
+            KernelEvents::VIEW => ['hashPassword',EventPriorities::PRE_WRITE],
         ];
     }
-    public function cryptPassword(ViewEvent $event): void
+    public function hashPassword(ViewEvent $event): void
     {
         $user = $event->getControllerResult();
         $methode = $event ->getRequest()->getMethod();
 
         if ($user instanceof User && $methode === Request::METHOD_POST && $methode === Request::METHOD_PUT) {
-            $user -> setPassword($this-> passwordHasher -> cryptPassword($user, $user->getPassword()));
+            $user -> setPassword($this-> passwordHasher -> hashPassword($user, $user->getPassword()));
         } 
    }
 }
