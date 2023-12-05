@@ -56,6 +56,9 @@ class Nft
     #[Groups('nft:read','user:read')]
     private ?Category $category = null;
 
+    #[ORM\OneToOne(mappedBy: 'nft', cascade: ['persist', 'remove'])]
+    #[Groups(['nft:read', 'category:read', 'user:read'])]
+    private ?NftPrice $nftPrice = null;
     #[ORM\OneToMany(mappedBy: 'nft', targetEntity: PurchaseNft::class, orphanRemoval: true)]
     #[Groups('nft:read')]
     private Collection $purchaseNfts;
@@ -154,6 +157,22 @@ class Nft
         return $this;
     }
 
+    public function getNftPrice(): ?NftPrice
+    {
+        return $this->nftPrice;
+    }
+
+    public function setNftPrice(NftPrice $nftPrice): static
+    {
+        // set the owning side of the relation if necessary
+        if ($nftPrice->getNft() !== $this) {
+            $nftPrice->setNft($this);
+        }
+
+        $this->nftPrice = $nftPrice;
+
+        return $this;
+    }
     /**
      * @return Collection<int, PurchaseNft>
      */
