@@ -63,6 +63,10 @@ class Nft
     #[Groups('nft:read')]
     private Collection $purchaseNfts;
 
+    #[ORM\Column]
+    #[Groups(['nft:read', 'category:read', 'purchaseNft:read', 'user:read'])]
+    private ?int $stock = null;
+
     public function __construct()
     {
         $this->purchaseNfts = new ArrayCollection();
@@ -199,6 +203,18 @@ class Nft
                 $purchaseNft->setNft(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStock(): ?int
+    {
+        return $this->stock;
+    }
+
+    public function setStock(int $stock): static
+    {
+        $this->stock = $stock;
 
         return $this;
     }
