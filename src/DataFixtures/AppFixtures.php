@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use DateTime;
 use Faker\Factory;
 use App\Entity\Nft;
 use App\Entity\User;
@@ -17,12 +18,12 @@ class AppFixtures extends Fixture
     const NBNFTS = 20;
     const NBADDRESSES = 11;
     const NBUSERS = 10;
-    
+
 
     public function __construct(private UserPasswordHasherInterface $passwordHasher)
     {
     }
-    
+
     public function load(ObjectManager $manager): void
     {
         $faker = Factory::create('fr_FR');
@@ -30,7 +31,7 @@ class AppFixtures extends Fixture
         $addresses = [];
         for ($i = 0; $i < self::NBADDRESSES; $i++) {
             $userAddress = new Address();
-            $userAddress 
+            $userAddress
                 ->setCity($faker->city())
                 ->setZIPCode($faker->postcode())
                 ->setStreet($faker->streetAddress());
@@ -40,80 +41,74 @@ class AppFixtures extends Fixture
             $addresses[] = $userAddress;
         }
 
-        $usedEmails = [];
         $users = [];
         for ($i = 0; $i < self::NBUSERS; $i++) {
-
-            $uniqueEmail = $faker->unique()->freeEmail();
-            while (in_array($uniqueEmail, $usedEmails)) {
-                $uniqueEmail = $faker->unique()->freeEmail();
-            }
-            $usedEmails[] = $uniqueEmail;
 
             $user = new User();
             $user
                 ->setPseudo($faker->userName())
+                ->setRoles(["ROLE_USER"])
                 ->setPassword($this->passwordHasher->hashPassword($user, "password"))
-                ->setEmail($uniqueEmail)
+                ->setEmail($faker->freeEmail())
                 ->setGender($faker->boolean(50))
                 ->setFirstname($faker->firstName())
                 ->setLastname($faker->lastName())
                 ->setBirthDate($faker->dateTimeBetween('-75 years', '-18 years'))
                 ->setAddress($addresses[$i])
                 ->setProfilPicture($faker->imageUrl(200, 200));
-            
-                $manager->persist($user); 
-                $users[] = $user;
+
+            $manager->persist($user);
+            $users[] = $user;
         }
 
-        
+
         $adminUser = new User();
-       
-            $adminUser
-                ->setPseudo('admin')
-                ->setRoles(["ROLE_ADMIN"])
-                ->setPassword($this->passwordHasher->hashPassword($user, 'admin'))
-                ->setEmail($faker->unique()->freeEmail())
-                ->setGender($faker->boolean(50))
-                ->setFirstname($faker->firstName())
-                ->setLastname($faker->lastName())
-                ->setBirthDate($faker->dateTimeBetween('-75 years', '-18 years'))
-                ->setAddress($addresses[$i])
-                ->setProfilPicture('../assets/profile-picture.webp');
-            
-                $manager->persist($adminUser); 
-         
-        
+
+        $adminUser
+            ->setPseudo('admin')
+            ->setRoles(["ROLE_ADMIN"])
+            ->setPassword($this->passwordHasher->hashPassword($adminUser, 'admin'))
+            ->setEmail($faker->freeEmail())
+            ->setGender($faker->boolean(50))
+            ->setFirstname($faker->firstName())
+            ->setLastname($faker->lastName())
+            ->setBirthDate($faker->dateTimeBetween('-75 years', '-18 years'))
+            ->setAddress($addresses[10])
+            ->setProfilPicture('../assets/profile-picture.webp');
+
+        $manager->persist($adminUser);
+
+
 
         $categories = [];
         for ($i = 0; $i < self::NBCATEGORIES; $i++) {
 
-        $category = new Category();
-        $category ->setName($faker->word()); 
-        $category ->setDescription($faker->text());          
-        $manager->persist($category);
+            $category = new Category();
+            $category->setName($faker->word());
+            $category->setDescription($faker->text(300));
+            $manager->persist($category);
 
-        $categories[] = $category;
+            $categories[] = $category;
         }
 
 
-        $nfts = [];
+
         for ($i = 0; $i < self::NBNFTS; $i++) {
             $nft = new Nft();
-            $nft ->setName($faker->word());
-            $nft ->setImg('../assets/profile-picture.webp');
-            $nft ->setLaunchDate($faker->dateTimeBetween('-2 years', '-1 years'));
-            $nft ->setDescription($faker->paragraph());
-            $nft ->setCategory($categories[rand(0, self::NBCATEGORIES - 1)]);
-            $nft ->setLaunchPriceEur($faker->randomFloat(2, 10000000000));
-            $nft ->setLaunchPriceEth($faker->randomFloat(2, 10000000000));
+            $nft->setName($faker->word());
+            $nft->setImg($faker->imageUrl(200, 200));
+            $nft->setStock($faker->numberBetween(1, 10));
+            $nft->setLaunchDate(new DateTime($faker->date()));
+            $nft->setDescription($faker->paragraph(1));
+            $nft->setCategory($faker->randomElement($categories));
+            $nft->setLaunchPriceEur($faker->randomFloat(2, 10000000000));
+            $nft->setLaunchPriceEth($faker->randomFloat(2, 10000000000));
+            $nft->setUser($faker->randomElement($users));
+
             $manager->persist($nft);
 
-            
-            $nfts[] = $nft;
         }
 
         $manager->flush();
-
     }
 }

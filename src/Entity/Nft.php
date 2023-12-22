@@ -32,11 +32,11 @@ class Nft
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['category:read', 'nft:read', 'user:read','nft:write', 'nft:update'])]
+    #[Groups(['category:read', 'nft:read', 'user:read', 'nft:write', 'nft:update'])]
     private ?string $img = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['category:read', 'nft:read', 'user:read', 'nft:write','nft:update'])]
+    #[Groups(['category:read', 'nft:read', 'user:read', 'nft:write', 'nft:update'])]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -52,8 +52,8 @@ class Nft
     private ?float $launchPriceEth = null;
 
     #[ORM\ManyToOne(inversedBy: 'nfts')]
-    #[ORM\JoinColumn(name:"category_id", nullable: false, referencedColumnName: "id")]
-    #[Groups('nft:read','user:read')]
+    #[ORM\JoinColumn(name: "category_id", nullable: false, referencedColumnName: "id")]
+    #[Groups('nft:read', 'user:read')]
     private ?Category $category = null;
 
     #[ORM\OneToOne(mappedBy: 'nft', cascade: ['persist', 'remove'])]
@@ -66,6 +66,10 @@ class Nft
     #[ORM\Column]
     #[Groups(['nft:read', 'category:read', 'purchaseNft:read', 'user:read'])]
     private ?int $stock = null;
+
+    #[ORM\ManyToOne(inversedBy: 'nft')]
+    #[Groups(['nft:read', 'category:read', 'purchaseNft:read', 'user:read'])]
+    private ?User $user = null;
 
     public function __construct()
     {
@@ -177,6 +181,7 @@ class Nft
 
         return $this;
     }
+
     /**
      * @return Collection<int, PurchaseNft>
      */
@@ -215,6 +220,37 @@ class Nft
     public function setStock(int $stock): static
     {
         $this->stock = $stock;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+
+    /**
+     * @return Collection<int, NFT>
+     */
+    public function getNft(): Collection
+    {
+        return $this->nft;
+    }
+
+    public function addNft(NFT $nft): static
+    {
+        if (!$this->nft->contains($nft)) {
+            $this->nft->add($nft);
+            $nft->setUser($this);
+        }
 
         return $this;
     }

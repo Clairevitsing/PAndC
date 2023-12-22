@@ -59,6 +59,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(inversedBy: 'user', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Address $address = null;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: NFT::class)]
+    private Collection $nft;
     
     public function __construct()
     {
