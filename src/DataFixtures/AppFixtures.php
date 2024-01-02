@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\NftCollection;
 use DateTime;
 use Faker\Factory;
 use App\Entity\Nft;
@@ -15,6 +16,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class AppFixtures extends Fixture
 {
     const NBCATEGORIES = 3;
+
+    const NBNftCollections = 4;
     const NBNFTS = 20;
     const NBADDRESSES = 11;
     const NBUSERS = 10;
@@ -78,7 +81,16 @@ class AppFixtures extends Fixture
 
         $manager->persist($adminUser);
 
+        $collections = [];
+        for ($i = 0; $i < self::NBNftCollections; $i++) {
+            $nftCollection = new NftCollection();
+            $nftCollection
+                ->setName($faker->word)
+                ->setDescription($faker->text(300));
 
+            $manager->persist($nftCollection);
+            $collections[] = $nftCollection;
+        }
 
         $categories = [];
         for ($i = 0; $i < self::NBCATEGORIES; $i++) {
