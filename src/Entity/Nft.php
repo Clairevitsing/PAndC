@@ -71,6 +71,14 @@ class Nft
     #[Groups(['nft:read', 'category:read', 'purchaseNft:read', 'user:read'])]
     private ?User $user = null;
 
+    #[ORM\ManyToOne(inversedBy: 'Nft')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Collection $collection = null;
+
+    #[ORM\ManyToOne(inversedBy: 'Nft')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?NftCollection $nftCollection = null;
+
     public function __construct()
     {
         $this->purchaseNfts = new ArrayCollection();
@@ -251,6 +259,30 @@ class Nft
             $this->nft->add($nft);
             $nft->setUser($this);
         }
+
+        return $this;
+    }
+
+    public function getCollection(): ?Collection
+    {
+        return $this->collection;
+    }
+
+    public function setCollection(?Collection $collection): static
+    {
+        $this->collection = $collection;
+
+        return $this;
+    }
+
+    public function getNftCollection(): ?NftCollection
+    {
+        return $this->nftCollection;
+    }
+
+    public function setNftCollection(?NftCollection $nftCollection): static
+    {
+        $this->nftCollection = $nftCollection;
 
         return $this;
     }
